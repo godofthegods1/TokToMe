@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+          integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
+    <script type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.js"></script>
+</head>
+<style>
+    body, html {
+        height: 100px;
+        margin: 0;
+        padding: 0;
+        background: #7F7FD5;
+        background: -webkit-linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5);
+        background: linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5);
+    }
+
+    #body {
+        display: none;
+    }
+
+    #container {
+        min-width: 20em;
+        display: flex;
+        justify-content: center;
+        margin-top: 100px;
+        max-height: fit-content;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .chat {
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+
+
+
+
+    #card {
+        min-width: inherit;
+        height: 500px;
+        border-radius: 15px !important;
+        background-color: rgba(0, 0, 0, 0.4) !important;
+        overflow-y: auto;
+    }
+
+    .msg_card_body {
+        overflow-y: auto;
+    }
+
+    .card-header {
+        border-radius: 15px 15px 0 0 !important;
+        border-bottom: 0 !important;
+    }
+
+    .card-footer {
+        border-radius: 0 0 15px 15px !important;
+        border-top: 0 !important;
+    }
+
+    .type_msg {
+        background-color: rgba(0, 0, 0, 0.3) !important;
+        border: 0 !important;
+        color: white !important;
+        height: 35px !important;
+        overflow-y: auto;
+    }
+
+    .type_msg:focus {
+        box-shadow: none !important;
+        outline: 0px !important;
+    }
+
+    .send_btn {
+        border-radius: 0 15px 15px 0 !important;
+        background-color: rgba(0, 0, 0, 0.3) !important;
+        border: 0 !important;
+        color: white !important;
+        cursor: pointer;
+    }
+
+    #deleteChat {
+        background-color: red;
+        border: none;
+        border-radius: 3px;
+        font-weight: 800;
+    }
+
+    .input-group{
+        max-width: 40em;
+        display: flex;
+        gap: 10px;
+    }
+
+    .msg_cotainer {
+        margin-top: auto;
+        margin-bottom: auto;
+        margin-left: 10px;
+        border-radius: 25px;
+        background-color: #82ccdd;
+        padding: 10px;
+        position: relative;
+        max-width: 60%;
+        width: fit-content;
+        word-wrap: auto;
+    }
+
+    .msg_cotainer_send {
+        max-width: 60%;
+        margin-top: auto;
+        margin-bottom: auto;
+        margin-right: 10px;
+        border-radius: 25px;
+        background-color: #78e08f;
+        padding: 10px;
+        position: relative;
+        word-wrap: auto;
+    }
+
+    .msg_time {
+        position: absolute;
+        left: 0;
+        bottom: -15px;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 10px;
+    }
+
+    .msg_time_send {
+        position: absolute;
+        right: 0;
+        bottom: -15px;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 10px;
+    }
+
+    .msg_head {
+        position: relative;
+    }
+
+
+</style>
+
+<body id="body">
+    <div id="container">
+
+            <div id="card">
+                <div class="card-body msg_card_body" id="bodyContent">
+                </div>
+            </div>
+            <button style="height: 2em; width: 4em; backdrop-filter: blur(30px); background-color: #ffffff50; border: none; -webkit-backdrop-filter: blur(30px);" id="moveDown" onclick="moveDown()">&#x2193</button>
+
+
+        <div class="input-group">
+
+            <textarea name="message" id="message" class="form-control type_msg"
+                        placeholder="Type your message..."></textarea>
+            <div class="input-group-append">
+                <button id="submit" class="input-group-text send_btn"><i class="fas fa-location-arrow"></i>
+                </button>
+
+            </div>
+            <button id="deleteChat">Clear Chat</button>
+        </div>
+    </div>
+
+
+
+    
+</body>
+</html>
+
+
+<script>
+
+    function moveDown() {
+        document.getElementById("card").scrollTo(0, (document.getElementById("card").getBoundingClientRect().bottom) * 2);
+    }
+</script>
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import {initializeApp} from "https://www.gstatic.com/firebasejs/9.6.6/firebase-app.js";
+    import {
+        getDatabase,
+        set,
+        ref,
+        push,
+        child,
+        onValue,
+        onChildAdded,
+        onChildRemoved,
+        remove
+    } from "https://www.gstatic.com/firebasejs/9.6.6/firebase-database.js";
+
+    let hidden = false;
+
+    
+    let keys = {
+        SquareBrackets: false,
+        quote: false
+    }
+    document.addEventListener('keydown', (event) => {
+        if (event.key === "]") {
+            keys.SquareBrackets = true;
+        }
+        if (event.key === "'") {
+            keys.quote = true;
+        }
+
+        if (keys.SquareBrackets && keys.quote && !hidden) {
+            hidden = true;
+            document.getElementById('body').style.display = "none";
+        } else if (keys.SquareBrackets && keys.quote && hidden){
+            document.getElementById('body').style.display = "block";
+            hidden = false;
+        }
+    })
+    document.addEventListener('keyup', (event) => {
+        if (event.key === "]") {
+            keys.SquareBrackets = false;
+        }
+        if (event.key === "'") {
+            keys.quote = false;
+        }
+    })
+
+    const firebaseConfig = {
+          apiKey: "AIzaSyA06ZqudGkmDYGsD3-VLc-EXg0kLX6CecU",
+          authDomain: "toktome-1.firebaseapp.com",
+          databaseURL: "https://toktome-1-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "toktome-1",
+          storageBucket: "toktome-1.appspot.com",
+          messagingSenderId: "239592786043",
+          appId: "1:239592786043:web:dcd8c7eb30157ab1e1bade"
+        };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    var user = prompt("Please enter the password");
+
+    switch (user){
+        case "u1":
+            document.getElementById('body').style.display = 'block';
+            break;
+        case "u2":
+            document.getElementById('body').style.display = 'block';
+            break;
+        default:
+            document.getElementById('body').style.display = 'none';
+    }
+
+
+    submit.addEventListener('click', (e) => {
+        var message = document.getElementById('message').value;
+
+        const id = push(child(ref(database), 'messages')).key;
+
+        if (message.replace(/\s/g, "") !== ""){
+            var today = new Date()
+            set(ref(database, 'messages/' + id), {
+                u: user,
+                message: message,
+                timeSent: today.getHours() + ":" + today.getMinutes()
+            });
+            today = undefined;
+            document.getElementById('message').value = "";
+        }
+    });
+
+    document.getElementById("message").addEventListener('keypress', (event) => {
+        if (event.key == "Enter") {
+            var message = document.getElementById('message').value;
+
+            const id = push(child(ref(database), 'messages')).key;
+
+            if (message.replace(/\s/g, "") !== ""){
+                var today = new Date()
+                set(ref(database, 'messages/' + id), {
+                    u: user,
+                    message: message,
+                    timeSent: today.getHours() + ":" + today.getMinutes()
+                });
+                today = undefined;
+                document.getElementById('message').value = "";
+            }
+        }
+    })
+
+    const newMsg = ref(database, 'messages/');
+    onChildAdded(newMsg, (data) => {
+
+
+
+        if(data.val().u != user) {
+            var divData = '<div class="d-flex justify-content-start mb-4" id="fromDiv">\n' +
+                                        
+                '                        </div>\n' +
+                '                        <div class="msg_cotainer ee" >\n' +
+                '                            '+data.val().message+'' +
+                '                            <span class="msg_time">' + data.val().timeSent + '</span>\n' +
+                '                        </div>\n' +
+                '                    </div>';
+            var d1 = document.getElementById('bodyContent');
+            d1.insertAdjacentHTML('beforebegin', divData);
+        }else{
+            var divData = '<div class="d-flex justify-content-end mb-4">\n' +
+                '                        <div class="msg_cotainer_send ee" id="sendDiv">\n' +
+                '                            '+data.val().message+'' +
+                '                            <span class="msg_time_send">' + data.val().timeSent + '</span>\n' +
+                '                        </div>\n' +                       
+                '                    </div>';
+            var d1 = document.getElementById('bodyContent');
+            d1.insertAdjacentHTML('beforebegin', divData);
+        }
+    });
+
+    document.getElementById("deleteChat").addEventListener('click', clearChat);
+
+    function clearChat() {
+            remove(ref(database));
+            alert("Successfully deleted chat.")
+        }
+
+    onChildRemoved(ref(database), (data) => {
+        document.querySelectorAll(".ee").forEach(el => el.remove());
+        document.querySelectorAll(".ee").forEach(el => el.remove());
+    });
+
+
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#action_menu_btn').click(function () {
+            $('.action_menu').toggle();
+        });
+    });
+</script>
