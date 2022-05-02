@@ -181,7 +181,7 @@
 <script>
 
     function moveDown() {
-        document.getElementById("card").scrollTo(0, (document.getElementById("card").getBoundingClientRect().bottom) * 2);
+        document.getElementById("card").scrollTo(0, (document.getElementById("card").getBoundingClientRect().bottom) * 3);
     }
 </script>
 
@@ -215,10 +215,10 @@
             keys.quote = true;
         }
 
-        if (keys.SquareBrackets && keys.quote && !hidden) {
+        if (keys.SquareBrackets && keys.quote && !hidden && loggedIn) {
             hidden = true;
             document.getElementById('body').style.display = "none";
-        } else if (keys.SquareBrackets && keys.quote && hidden){
+        } else if (keys.SquareBrackets && keys.quote && hidden && loggedIn){
             document.getElementById('body').style.display = "block";
             hidden = false;
         }
@@ -247,16 +247,19 @@
     const database = getDatabase(app);
 
     var user = prompt("Please enter the password");
-
+    let loggedIn = false;
     switch (user){
         case "u1":
             document.getElementById('body').style.display = 'block';
+            loggedIn = true;
             break;
         case "u2":
             document.getElementById('body').style.display = 'block';
             break;
+            loggedIn = true;
         default:
             document.getElementById('body').style.display = 'none';
+            loggedIn = false;
     }
 
 
