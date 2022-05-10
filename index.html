@@ -181,7 +181,7 @@
 <script>
 
     function moveDown() {
-        document.getElementById("card").scrollTo(0, (document.getElementById("card").getBoundingClientRect().bottom) * 3);
+        document.getElementById("card").scrollTo(0, $('#card')[0].scrollHeight);
     }
 </script>
 
@@ -301,9 +301,7 @@
 
     const newMsg = ref(database, 'messages/');
     onChildAdded(newMsg, (data) => {
-
-
-
+        document.getElementById("card").scrollTo(0, $('#card')[0].scrollHeight);
         if(data.val().u != user) {
             var divData = '<div class="d-flex justify-content-start mb-4" id="fromDiv">\n' +
                                         
